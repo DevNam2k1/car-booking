@@ -4,12 +4,8 @@ import com.project.BookingCar.domain.dto.message.MessageResponse;
 import com.project.BookingCar.domain.dto.security.JwtResponse;
 import com.project.BookingCar.domain.dto.security.LoginRequest;
 import com.project.BookingCar.domain.dto.security.SignupRequest;
-import com.project.BookingCar.domain.model.Driver;
-import com.project.BookingCar.domain.model.Role;
-import com.project.BookingCar.domain.model.User;
-import com.project.BookingCar.repository.DriverRepository;
-import com.project.BookingCar.repository.RoleRepository;
-import com.project.BookingCar.repository.UserRepository;
+import com.project.BookingCar.domain.model.*;
+import com.project.BookingCar.repository.*;
 import com.project.BookingCar.security.jwt.JwtUtils;
 import com.project.BookingCar.security.service.UserDetailsImpl;
 import com.project.BookingCar.service.AuthService;
@@ -41,7 +37,8 @@ public class AuthServiceImpl extends BaseService implements AuthService {
 
     private final DriverRepository driverRepository;
 
-
+    private final GarageRepository garageRepository;
+    private final ExpertRepository expertRepository;
     private final UserRepository userRepository;
 
 
@@ -103,30 +100,37 @@ public class AuthServiceImpl extends BaseService implements AuthService {
                         Role adminRole = roleRepository.findByName(ROLE_ADMIN.getValue())
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-
+                        Expert expert = new Expert();
+                        expert.setUsername(user.getUsername());
+                        expert.setUser(user);
+                        expert.setCreateUser(getUsername());
+                        expertRepository.save(expert);
                         break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ROLE_MODERATOR.getValue())
+                    case "garage":
+                        Role modRole = roleRepository.findByName(ROLE_GARAGE.getValue())
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-
+                        Garage garage = new Garage();
+                        garage.setUsername(user.getUsername());
+                        garage.setUser(user);
+                        garage.setCreateUser(getUsername());
+                        garageRepository.save(garage);
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ROLE_USER.getValue())
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(userRole);
+                        user.setRoles(roles);
+                        Driver driver = new Driver();
+                        driver.setCreatedAt(LocalDateTime.now());
+                        driver.setCreateUser(user.getUsername());
+                        driver.setUsername(user.getUsername());
+                        driver.setEmail(user.getEmail());
+                        driver.setUser(user);
+                        driverRepository.save(driver);
                 }
             });
         }
-
-        user.setRoles(roles);
-        Driver driver = new Driver();
-        driver.setCreatedAt(LocalDateTime.now());
-        driver.setCreateUser(user.getUsername());
-        driver.setUsername(user.getUsername());
-        driver.setEmail(user.getEmail());
-        driver.setUser(user);
-        driverRepository.save(driver);
         userRepository.save(user);
 
         return MessageResponse.builder().name("User registered successfully!").build();

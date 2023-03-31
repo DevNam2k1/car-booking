@@ -8,10 +8,8 @@ import javax.persistence.Column;
 public class GarageDTO {
     private Long id;
     private String name;
-    private String username;
     private String address;
     private Float latiTude;
     private Float longiTude;
     private String description;
-    private Long userId;
 }

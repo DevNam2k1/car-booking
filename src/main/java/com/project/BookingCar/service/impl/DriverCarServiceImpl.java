@@ -2,6 +2,7 @@ package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.DriverCarDTO;
 import com.project.BookingCar.domain.dto.page.DriverCarPageDTO;
+import com.project.BookingCar.domain.enums.ChangeStatusEnum;
 import com.project.BookingCar.domain.model.Car;
 import com.project.BookingCar.domain.model.Driver;
 import com.project.BookingCar.domain.model.DriverCar;
@@ -54,7 +55,14 @@ public class DriverCarServiceImpl extends BaseService implements DriverCarServic
 
     @Override
     public void createCarOfDriver(DriverCarDTO driverCarDTO) {
-        DriverCar driverCar = mapper.convertToEntity(driverCarDTO,DriverCar.class);
+        DriverCar driverCar = DriverCar.builder()
+                .carImage(driverCarDTO.getCarImage())
+                .chassisNumber(driverCarDTO.getChassisNumber())
+                .engineNumber(driverCarDTO.getEngineNumber())
+                .licensePlate(driverCarDTO.getLicensePlate())
+                .color(driverCarDTO.getColor())
+                .status(driverCarDTO.getStatus())
+                .build();
         if (driverCarDTO.getCarId() != null) {
             Car car = carRepository.findById(driverCarDTO.getCarId())
                     .orElseThrow(() -> new IllegalArgumentException("Car is not exist!"));
@@ -88,10 +96,10 @@ public class DriverCarServiceImpl extends BaseService implements DriverCarServic
     @Override
     public void disableCarOfDriver(Long id) {
         DriverCar driverCar = driverCarRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Car of driver is not exist!"));
-        if (driverCar.getStatus() == "active"){
-            driverCar.setStatus("disable");
+        if (driverCar.getStatus().equals(ChangeStatusEnum.ACTIVE.getValue())) {
+            driverCar.setStatus(ChangeStatusEnum.DISABLE.getValue());
         } else {
-            driverCar.setStatus("active");
+            driverCar.setStatus(ChangeStatusEnum.ACTIVE.getValue());
         }
         driverCarRepository.save(driverCar);
     }

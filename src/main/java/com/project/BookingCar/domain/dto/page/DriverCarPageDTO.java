@@ -1,10 +1,16 @@
 package com.project.BookingCar.domain.dto.page;
 
+import com.project.BookingCar.domain.dto.CarDTO;
+import com.project.BookingCar.domain.dto.DriverDTO;
 import com.project.BookingCar.domain.model.Car;
 import com.project.BookingCar.domain.model.Driver;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
 public class DriverCarPageDTO {
 
     private Long id;
@@ -14,6 +20,6 @@ public class DriverCarPageDTO {
     private String color;
     private String carImage;
     private String status;
-    private Driver driver;
-    private Car car;
+    private DriverDTO driver;
+    private CarDTO car;
 }

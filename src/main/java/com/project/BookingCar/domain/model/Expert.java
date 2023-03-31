@@ -20,8 +20,9 @@ public class Expert extends BaseEntity{
     private String username;
     private String phone;
     private String address;
+    private String status;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 }

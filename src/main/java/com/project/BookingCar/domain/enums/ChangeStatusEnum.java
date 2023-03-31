@@ -1,14 +1,11 @@
 package com.project.BookingCar.domain.enums;
 
-public enum RoleEnum {
-    ROLE_USER("ROLE_USER"),
-    ROLE_ADMIN("ROLE_ADMIN"),
-    ROLE_GARAGE("ROLE_GARAGE");
-
-
+public enum ChangeStatusEnum {
+    DISABLE("disable"),
+    ACTIVE("active");
     private String value;
 
-    RoleEnum(String value){
+    ChangeStatusEnum(String value){
         this.value = value;
     }
 

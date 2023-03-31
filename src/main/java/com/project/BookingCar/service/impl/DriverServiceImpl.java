@@ -1,6 +1,7 @@
 package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.DriverDTO;
+import com.project.BookingCar.domain.enums.ChangeStatusEnum;
 import com.project.BookingCar.domain.model.Driver;
 import com.project.BookingCar.repository.DriverRepository;
 import com.project.BookingCar.service.BaseService;
@@ -21,6 +22,11 @@ public class DriverServiceImpl extends BaseService implements DriverService {
         Driver driver = driverRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Driver is not exist"));
         driver.setUpdatedAt(LocalDateTime.now());
         driver.setUsername(getUsername());
+        driver.setName(driverDTO.getName());
+        driver.setGender(driverDTO.getGender());
+        driver.setAddress(driverDTO.getAddress());
+        driver.setPhone(driverDTO.getPhone());
+        driver.setStatus(driverDTO.getStatus());
         driverRepository.save(driver);
     }
 
@@ -29,10 +35,10 @@ public class DriverServiceImpl extends BaseService implements DriverService {
         Driver driver = driverRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Driver is not exist"));
         driver.setUpdatedAt(LocalDateTime.now());
         driver.setUpdateUser(getUsername());
-        if (driver.getStatus() == "disable") {
-            driver.setStatus("active");
+        if (driver.getStatus().equals(ChangeStatusEnum.ACTIVE.getValue())) {
+            driver.setStatus(ChangeStatusEnum.DISABLE.getValue());
         } else {
-            driver.setStatus("disable");
+            driver.setStatus(ChangeStatusEnum.ACTIVE.getValue());
         }
         driverRepository.save(driver);
     }

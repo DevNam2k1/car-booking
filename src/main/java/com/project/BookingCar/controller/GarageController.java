@@ -56,22 +56,6 @@ public class GarageController extends BaseController {
     public ResponseEntity<?> getGarageById(@PathVariable Long id){
         return createSuccessResponse("Get garage by id", garageService.getGarageById(id));
     }
-    @PostMapping
-    @Operation(summary = "Create new a garage")
-    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Create new a garage successful",
-            content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ExtendedMessage.class))})
-    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
-            content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ExtendedMessage.class))})
-    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
-            content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ExtendedMessage.class))})
-
-    public ResponseEntity<?> createGarage(@RequestBody GarageDTO garageDTO){
-        garageService.createNewGarage(garageDTO);
-        return createSuccessResponse("Create a new garage", HttpStatus.CREATED);
-    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update garage")

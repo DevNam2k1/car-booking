@@ -21,6 +21,7 @@ public class Driver extends BaseEntity{
     private Long id;
     private String username;
     private String phone;
+    private String name;
     private String email;
     private String gender;
     private String status;

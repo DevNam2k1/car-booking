@@ -1,8 +1,8 @@
 package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.GarageDTO;
+import com.project.BookingCar.domain.dto.page.GaragePageDTO;
 import com.project.BookingCar.domain.model.Garage;
-import com.project.BookingCar.domain.model.User;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.GarageRepository;
@@ -32,34 +32,22 @@ public class GarageServiceImpl extends BaseService implements GarageService {
 
 
     @Override
-    public Page<GarageDTO> getPagingOfGarage(GarageParam garageParam, Integer pageNo, Integer pageSize) {
+    public Page<GaragePageDTO> getPagingOfGarage(GarageParam garageParam, Integer pageNo, Integer pageSize) {
         int page = pageNo == 0? pageNo : pageNo - 1;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Garage> garagePage = garageRepositoryCustom.getPagingGarage(garageParam, pageable);
-        return mapper.convertToResponsePage(garagePage,GarageDTO.class,pageable);
+        return mapper.convertToResponsePage(garagePage,GaragePageDTO.class,pageable);
     }
 
     @Override
-    public GarageDTO getGarageById(Long id) {
+    public GaragePageDTO getGarageById(Long id) {
         Garage garage = garageRepository.findById(id)
                 .orElseThrow(
                         () -> new IllegalArgumentException("Garage not exist")
                 );
-        return mapper.convertToResponse(garage, GarageDTO.class);
+        return mapper.convertToResponse(garage, GaragePageDTO.class);
     }
 
-    @Override
-    public void createNewGarage(GarageDTO garageDTO) {
-        User user = userRepository.findById(garageDTO.getUserId())
-                .orElseThrow(
-                        () -> new IllegalArgumentException("User not exist")
-                );
-        Garage garage = mapper.convertToEntity(garageDTO, Garage.class);
-        garage.setUser(user);
-        garage.setCreatedAt(LocalDateTime.now());
-        garage.setCreateUser(getUsername());
-        garageRepository.save(garage);
-    }
 
     @Override
     public void updateGarage(Long id, GarageDTO garageDTO) {
@@ -67,13 +55,13 @@ public class GarageServiceImpl extends BaseService implements GarageService {
                 .orElseThrow(
                         () -> new IllegalArgumentException("Garage not exist")
                 );
-        garage.setUpdateUser(getUsername());
         garage.setUpdatedAt(LocalDateTime.now());
-        User user = userRepository.findById(garageDTO.getUserId())
-                .orElseThrow(
-                        () -> new IllegalArgumentException("User not exist")
-                );
-        garage.setUser(user);
+        garage.setAddress(garageDTO.getAddress());
+        garage.setDescription(garageDTO.getDescription());
+        garage.setLatiTude(garageDTO.getLatiTude());
+        garage.setLongiTude(garageDTO.getLongiTude());
+        garage.setName(garageDTO.getName());
+        garage.setUpdateUser(getUsername());
         garageRepository.save(garage);
     }
 
