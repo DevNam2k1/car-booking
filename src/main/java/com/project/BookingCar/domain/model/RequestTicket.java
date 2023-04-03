@@ -1,5 +1,6 @@
 package com.project.BookingCar.domain.model;
 
+import com.project.BookingCar.domain.enums.RequestTicketType;
 import com.project.BookingCar.domain.enums.RequestTicketsStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,6 +59,11 @@ public class RequestTicket extends BaseEntity{
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private RequestTicketsStatus status;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private RequestTicketType type;
+
     @Column(name = "description")
     private String description;
     @Column(name = "garage_confirmed_user")
@@ -74,8 +80,14 @@ public class RequestTicket extends BaseEntity{
     private LocalDateTime garageCompleteDate;
     @Column(name = "canceled_user")
     private String canceledUser;
+    @Column(name = "appointment_date")
+    private LocalDateTime appointmentDate;
+    @Column(name = "appointment_time")
+    private LocalDateTime appointmentTime;
     @Column(name = "canceled_date")
     private LocalDateTime canceledDate;
+    @Column(name = "address_mark")
+    private String addressMark;
     @OneToMany(mappedBy = "requestTicket", fetch = FetchType.LAZY)
     private List<RequestBookingMedia> requestTicketRequestBookingMedias;
 
