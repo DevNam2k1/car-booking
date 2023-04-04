@@ -41,6 +41,26 @@ public class GarageController extends BaseController {
                                                @RequestParam Integer pageSize) {
         return createSuccessResponse("Get paging of garage successful", garageService.getPagingOfGarage(garageParam,pageNo, pageSize));
     }
+
+    @GetMapping("/to-booking")
+    @Operation(summary = "Get paging of garage")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Get paging of garage successful",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> getDistanceOfLatAndLong(@RequestParam Integer distance,
+                                                     @RequestParam Double latTitude,
+                                                     @RequestParam Double longTitude,
+                                                     @RequestParam Integer pageNo,
+                                                     @RequestParam Integer pageSize){
+        return createSuccessResponse("Get paging of garage", garageService.getPagingOfGarageBetweenLatAndLong(distance, latTitude, longTitude, pageNo, pageSize));
+
+    }
     @GetMapping("/{id}")
     @Operation(summary = "Get garage by id")
     @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Get garage by id successful",

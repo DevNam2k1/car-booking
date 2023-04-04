@@ -5,6 +5,7 @@ import com.project.BookingCar.domain.dto.appointment.CarServicesDTO;
 import com.project.BookingCar.domain.dto.appointment.CarStatuesDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.enums.RequestMediaImageType;
+import com.project.BookingCar.domain.enums.RequestTicketType;
 import com.project.BookingCar.domain.enums.RequestTicketsStatus;
 import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.repository.*;
@@ -42,6 +43,24 @@ public class BookingServiceImpl extends BaseService implements BookingService {
         saveRequestCarStatus(requestTicket,createAppointmentDTO.getVehicleCondition());
         saveRequestBookingMedia(requestTicket,createAppointmentDTO.getImages());
         saveRequestServices(requestTicket,createAppointmentDTO.getServices());
+    }
+
+    @Override
+    public void createUpgradeOfTheCar(String description) {
+        if (description.length() > 500){
+            throw new IllegalArgumentException("Description can't exceed 500 character!!");
+        }
+        Driver driver = driverRepository.findByUsername(getUsername()).orElseThrow(() -> new IllegalArgumentException("Driver is not exist!!"));
+        RequestTicket requestTicket = new RequestTicket();
+        requestTicket.setDriverRefId(driver.getId());
+        requestTicket.setDriverPhone(driver.getPhone());
+        requestTicket.setDriverName(driver.getName());
+        requestTicket.setDriverAddress(driver.getAddress());
+        requestTicket.setCreateUser(getUsername());
+        requestTicket.setType(RequestTicketType.UPGRADE);
+        requestTicket.setStatus(RequestTicketsStatus.NEW);
+        requestTicket.setDescription(description);
+        requestTicketRepository.save(requestTicket);
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {

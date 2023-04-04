@@ -42,4 +42,21 @@ public class BookingController extends BaseController {
         return createSuccessResponse("Create a new appointment", HttpStatus.CREATED);
     }
 
+    @PostMapping("/upgrade-car")
+    @Operation(summary = "Upgrade of the car")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Upgrade of the car successful",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> upgradeOfTheCar(@RequestBody  String description){
+        bookingService.createUpgradeOfTheCar(description);
+        return createSuccessResponse("Upgrade of the car", HttpStatus.CREATED);
+    }
+
 }

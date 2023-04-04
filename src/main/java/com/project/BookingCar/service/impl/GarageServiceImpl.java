@@ -12,11 +12,14 @@ import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.GarageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,22 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Garage> garagePage = garageRepositoryCustom.getPagingGarage(garageParam, pageable);
         return mapper.convertToResponsePage(garagePage,GaragePageDTO.class,pageable);
+    }
+
+    @Override
+    public Page<GaragePageDTO> getPagingOfGarageBetweenLatAndLong(Integer distance, Double latTitude, Double longTitude, Integer pageNo, Integer pageSize) {
+        int page = pageNo == 0? pageNo : pageNo - 1;
+        Pageable pageable = PageRequest.of(page,pageSize);
+        Double newLat = (double) (latTitude + (distance*2)/111.12);
+        Double newLong = (double) (longTitude + (distance*2)/111.12);
+        List<Garage> garages = garageRepository.findAll();
+        List<Garage> garageList = new ArrayList<>();
+        for (Garage g: garages) {
+            if (latTitude <= g.getLatiTude() && g.getLatiTude() <= newLat && longTitude <= g.getLongiTude() && g.getLongiTude() <= newLong){
+                garageList.add(g);
+            }
+        }
+        return new PageImpl<>(mapper.convertToResponseList(garageList, GaragePageDTO.class), pageable, garageList.size());
     }
 
     @Override

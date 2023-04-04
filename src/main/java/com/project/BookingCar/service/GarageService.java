@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface GarageService {
     Page<GaragePageDTO> getPagingOfGarage(GarageParam garageParam, Integer pageNo, Integer pageSize);
+    Page<GaragePageDTO> getPagingOfGarageBetweenLatAndLong(Integer instance, Double latTitude, Double longTitude, Integer pageNo, Integer pageSize);
     GaragePageDTO getGarageById(Long id);
     void updateGarage(Long id, GarageDTO garageDTO);
     void deleteGarage(Long id);
