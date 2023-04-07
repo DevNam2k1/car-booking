@@ -4,16 +4,21 @@ import com.google.gson.Gson;
 import com.project.BookingCar.domain.dto.appointment.CarServicesDTO;
 import com.project.BookingCar.domain.dto.appointment.CarStatuesDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
-import com.project.BookingCar.domain.enums.RequestMediaImageType;
-import com.project.BookingCar.domain.enums.RequestTicketType;
-import com.project.BookingCar.domain.enums.RequestTicketsStatus;
+import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
+import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -26,6 +31,7 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     private final RequestCarStatusRepository requestCarStatusRepository;
     private final RequestBookingMediaRepository requestBookingMediaRepository;
     private final DriverRepository driverRepository;
+    private final RequestTicketRepositoryCustom requestTicketRepositoryCustom;
 
     @Override
     public void createNewBookingForAppointment(CreateAppointmentDTO createAppointmentDTO) {
@@ -61,6 +67,43 @@ public class BookingServiceImpl extends BaseService implements BookingService {
         requestTicket.setStatus(RequestTicketsStatus.NEW);
         requestTicket.setDescription(description);
         requestTicketRepository.save(requestTicket);
+    }
+
+    @Override
+    public Page<AppointmentDriverPageDTO> getPagingOfAppointmentByStatus(AppointmentDriverStatus status, Integer pageNum, Integer pageSize) {
+        int page = pageNum == 0 ? pageNum : pageNum - 1;
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Long driverId = driverRepository.findByUsername(getUsername()).orElseThrow(() -> new IllegalArgumentException("")).getId();
+        List<RequestTicket> appointments = new ArrayList<>();
+        switch (status){
+            case UPCOMING:
+                appointments = requestTicketRepositoryCustom.listAppointmentScheduleForDriverWithRequestTicketStatus(
+                        Arrays.asList(
+                                RequestTicketsStatus.NEW,
+                                RequestTicketsStatus.GARAGE_CONFIRMED,
+                                RequestTicketsStatus.GARAGE_NO_ACTION,
+                                RequestTicketsStatus.GARAGE_CANCELED
+                        ),
+                        Arrays.asList(
+                                ServiceTicketsStatus.CHECKING,
+                                ServiceTicketsStatus.CHECKED
+                        ),
+                        Collections.singletonList(
+                                RequestTicketsStatus.CANCELED
+                        ),
+                        driverId,
+                        pageable);
+                break;
+            case PENDING:
+                break;
+            case PROCESSING:
+                break;
+            case COMPLETED:
+                break;
+            case CANCEL:
+                break;
+        }
+        return null;
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
