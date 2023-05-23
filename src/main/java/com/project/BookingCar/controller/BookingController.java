@@ -75,4 +75,19 @@ public class BookingController extends BaseController {
         return createSuccessResponse("Get paging of appointment", bookingService.getPagingOfAppointmentByStatus(appointmentDriverStatus, pageNum, pageSize));
     }
 
+    @GetMapping("/count-appointment-by-waiting-status")
+    @Operation(summary = "Count request ticket by waiting customer approve price")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Count request ticket by waiting customer approve price successful",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> countRequestTicket(){
+        return createSuccessResponse("Count request ticket by waiting customer approve price", bookingService.countRequestTicketOfWaitingCustomerApprove());
+    }
+
 }

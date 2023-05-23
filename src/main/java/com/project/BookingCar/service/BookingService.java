@@ -11,4 +11,6 @@ public interface BookingService {
     void createUpgradeOfTheCar(String description);
 
     Page<AppointmentDriverPageDTO> getPagingOfAppointmentByStatus(AppointmentDriverStatus status, Integer pageNum, Integer pageSize);
+
+    Integer countRequestTicketOfWaitingCustomerApprove();
 }

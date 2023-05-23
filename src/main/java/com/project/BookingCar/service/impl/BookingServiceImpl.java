@@ -34,6 +34,7 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     private final RequestBookingMediaRepository requestBookingMediaRepository;
     private final DriverRepository driverRepository;
     private final RequestTicketRepositoryCustom requestTicketRepositoryCustom;
+    private final ServiceTicketRepository serviceTicketRepository;
     private final CommonMapper commonMapper;
     @Override
     public void createNewBookingForAppointment(CreateAppointmentDTO createAppointmentDTO) {
@@ -142,6 +143,11 @@ public class BookingServiceImpl extends BaseService implements BookingService {
                 break;
         }
         return new PageImpl<>(commonMapper.convertToResponseList(appointments, AppointmentDriverPageDTO.class), pageable, appointments.size());
+    }
+
+    @Override
+    public Integer countRequestTicketOfWaitingCustomerApprove() {
+        return serviceTicketRepository.countRequestTicketOfStatusWaitingCustomerApprove(getUserId(), ServiceTicketsStatus.WAITING_CUSTOMER_APPROVE_PRICE.getValue());
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
