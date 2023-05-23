@@ -7,11 +7,13 @@ import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
 import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.*;
+import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     private final RequestBookingMediaRepository requestBookingMediaRepository;
     private final DriverRepository driverRepository;
     private final RequestTicketRepositoryCustom requestTicketRepositoryCustom;
-
+    private final CommonMapper commonMapper;
     @Override
     public void createNewBookingForAppointment(CreateAppointmentDTO createAppointmentDTO) {
         RequestTicket requestTicket = new RequestTicket();
@@ -95,15 +97,51 @@ public class BookingServiceImpl extends BaseService implements BookingService {
                         pageable);
                 break;
             case PENDING:
+                appointments = requestTicketRepositoryCustom.listAppointmentScheduleForDriverWithServiceTicketStatus(
+                        Collections.singletonList(ServiceTicketsStatus.WAITING_CUSTOMER_APPROVE_PRICE),
+                        Collections.singletonList(
+                                RequestTicketsStatus.CANCELED
+                        ),
+                        driverId,
+                        pageable
+                );
                 break;
             case PROCESSING:
+                appointments = requestTicketRepositoryCustom.listAppointmentScheduleForDriverWithServiceTicketStatus(
+                        Arrays.asList(
+                                ServiceTicketsStatus.CUSTOMER_APPROVED_PRICE,
+                                ServiceTicketsStatus.FIXED,
+                                ServiceTicketsStatus.PAYMENT_CONFIRMATION),
+                        Collections.singletonList(
+                                RequestTicketsStatus.CANCELED
+                        ),
+                        driverId,
+                        pageable);
                 break;
             case COMPLETED:
+                appointments = requestTicketRepositoryCustom.listAppointmentScheduleForDriverWithServiceTicketStatus(
+                        Arrays.asList(
+                                ServiceTicketsStatus.GARAGE_HANDED_OVER_CAR,
+                                ServiceTicketsStatus.COMPLETED
+                        ),
+                        Collections.singletonList(
+                                RequestTicketsStatus.CANCELED
+                        ),
+                        driverId,
+                        pageable);
                 break;
             case CANCEL:
+                appointments =  requestTicketRepositoryCustom.listAppointmentScheduleForDriverWithRequestTicketStatus(
+                        Collections.singletonList(RequestTicketsStatus.CANCELED),
+                        Collections.singletonList(
+                                ServiceTicketsStatus.CANCELED
+                        ),
+                        Collections.emptyList(),
+                        driverId,
+                        pageable);
                 break;
         }
-        return null;
+        return new PageImpl<>(commonMapper.convertToResponseList(appointments, AppointmentDriverPageDTO.class), pageable, appointments.size());
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {

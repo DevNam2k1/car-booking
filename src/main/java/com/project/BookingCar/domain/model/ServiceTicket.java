@@ -21,7 +21,7 @@ public class ServiceTicket extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_ticket")
+    @JoinColumn(name = "request_ticket_id")
     private RequestTicket requestTicket;
     @Column(name = "garage_delivery_date")
     private LocalDateTime garageDeliveryDate;
