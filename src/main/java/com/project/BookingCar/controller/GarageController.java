@@ -4,6 +4,7 @@ import com.project.BookingCar.config.Constant;
 import com.project.BookingCar.controller.base.BaseController;
 import com.project.BookingCar.domain.dto.GarageDTO;
 import com.project.BookingCar.domain.dto.message.ExtendedMessage;
+import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.service.GarageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,5 +109,21 @@ public class GarageController extends BaseController {
     public ResponseEntity<?> deleteGarage(@PathVariable Long id) {
         garageService.deleteGarage(id);
         return createSuccessResponse("Delete garage", HttpStatus.OK);
+    }
+
+    @PostMapping("/{requestTicketId}/handle-incoming-request/{status}")
+    @Operation(summary = "Garage accepted appointment of car")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage accepted appointment of car",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> handleIncomingRequest(@PathVariable Long requestTicketId, @PathVariable SuperStatus status){
+        garageService.handleIncomingRequest(requestTicketId, status);
+        return createSuccessResponse("Garage accepted appointment of car", HttpStatus.OK);
     }
 }

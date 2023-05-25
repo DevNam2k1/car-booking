@@ -2,15 +2,20 @@ package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.GarageDTO;
 import com.project.BookingCar.domain.dto.page.GaragePageDTO;
+import com.project.BookingCar.domain.enums.RequestTicketsStatus;
+import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.model.Garage;
+import com.project.BookingCar.domain.model.RequestTicket;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.GarageRepository;
 import com.project.BookingCar.repository.GarageRepositoryCustom;
+import com.project.BookingCar.repository.RequestTicketRepository;
 import com.project.BookingCar.repository.UserRepository;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.GarageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GarageServiceImpl extends BaseService implements GarageService {
 
@@ -32,6 +38,7 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     private final GarageRepositoryCustom garageRepositoryCustom;
 
     private final CommonMapper mapper;
+    private final RequestTicketRepository requestTicketRepository;
 
 
     @Override
@@ -87,5 +94,17 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     @Override
     public void deleteGarage(Long id) {
         garageRepository.deleteById(id);
+    }
+
+    @Override
+    public void handleIncomingRequest(Long requestTicket, SuperStatus status) {
+        // Garage accepted appointment of car
+        RequestTicket rt = requestTicketRepository.findById(requestTicket).orElseThrow(() -> new IllegalArgumentException("Request ticket not exits"));
+        if (SuperStatus.ACCEPTED.equals(status)) {
+            rt.setStatus(RequestTicketsStatus.GARAGE_CONFIRMED);
+        } else {
+            log.info("Request ticket have cancel!!!");
+        }
+        requestTicketRepository.save(rt);
     }
 }
