@@ -1,10 +1,7 @@
 package com.project.BookingCar.domain.model;
 
 import com.project.BookingCar.domain.enums.ServiceTicketsStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ServiceTicket extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

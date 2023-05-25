@@ -113,7 +113,7 @@ public class GarageController extends BaseController {
 
     @PostMapping("/{requestTicketId}/handle-incoming-request/{status}")
     @Operation(summary = "Garage accepted appointment of car")
-    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage accepted appointment of car",
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage accepted appointment of car successfully",
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = ExtendedMessage.class))})
     @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
@@ -125,5 +125,21 @@ public class GarageController extends BaseController {
     public ResponseEntity<?> handleIncomingRequest(@PathVariable Long requestTicketId, @PathVariable SuperStatus status){
         garageService.handleIncomingRequest(requestTicketId, status);
         return createSuccessResponse("Garage accepted appointment of car", HttpStatus.OK);
+    }
+
+    @PostMapping("/{requestTicketId}/confirm-checked-in")
+    @Operation(summary = "Garage confirm driver check in")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage confirm driver check in successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> confirmCheckedIn(@PathVariable Long requestTicketId){
+        garageService.confirmCheckIn(requestTicketId);
+        return createSuccessResponse("Garage confirm driver check in", HttpStatus.OK);
     }
 }

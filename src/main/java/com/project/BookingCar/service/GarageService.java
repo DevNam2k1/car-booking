@@ -13,5 +13,5 @@ public interface GarageService {
     void updateGarage(Long id, GarageDTO garageDTO);
     void deleteGarage(Long id);
     void handleIncomingRequest(Long requestTicket, SuperStatus status);
-
+    void confirmCheckIn(Long requestTicketId);
 }

@@ -6,12 +6,10 @@ import com.project.BookingCar.domain.enums.RequestTicketsStatus;
 import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.model.Garage;
 import com.project.BookingCar.domain.model.RequestTicket;
+import com.project.BookingCar.domain.model.ServiceTicket;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
-import com.project.BookingCar.repository.GarageRepository;
-import com.project.BookingCar.repository.GarageRepositoryCustom;
-import com.project.BookingCar.repository.RequestTicketRepository;
-import com.project.BookingCar.repository.UserRepository;
+import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.GarageService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class GarageServiceImpl extends BaseService implements GarageService {
+    private final ServiceTicketRepository serviceTicketRepository;
 
     private final GarageRepository garageRepository;
 
@@ -105,6 +104,20 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         } else {
             log.info("Request ticket have cancel!!!");
         }
+        requestTicketRepository.save(rt);
+    }
+
+    @Override
+    public void confirmCheckIn(Long requestTicketId) {
+        // Garage confirm driver check in
+        RequestTicket rt = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exits"));
+        rt.setStatus(RequestTicketsStatus.COMPLETED);
+        ServiceTicket serviceTicket = ServiceTicket
+                .builder()
+                .requestTicket(rt)
+                .build();
+        serviceTicket.setCreateUser(getUsername());
+        serviceTicketRepository.save(serviceTicket);
         requestTicketRepository.save(rt);
     }
 }
