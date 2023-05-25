@@ -5,6 +5,9 @@ import com.project.BookingCar.domain.dto.page.GaragePageDTO;
 import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.param.GarageParam;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface GarageService {
     Page<GaragePageDTO> getPagingOfGarage(GarageParam garageParam, Integer pageNo, Integer pageSize);
@@ -14,4 +17,5 @@ public interface GarageService {
     void deleteGarage(Long id);
     void handleIncomingRequest(Long requestTicket, SuperStatus status);
     void confirmCheckIn(Long requestTicketId);
+    void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description);
 }
