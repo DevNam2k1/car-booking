@@ -3,15 +3,20 @@ package com.project.BookingCar.service.impl;
 import com.project.BookingCar.domain.dto.GarageDTO;
 import com.project.BookingCar.domain.dto.page.GaragePageDTO;
 import com.project.BookingCar.domain.enums.RequestTicketsStatus;
+import com.project.BookingCar.domain.enums.ServiceMediaImageType;
+import com.project.BookingCar.domain.enums.ServiceTicketsStatus;
 import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.model.Garage;
 import com.project.BookingCar.domain.model.RequestTicket;
+import com.project.BookingCar.domain.model.ServiceBookingMedia;
 import com.project.BookingCar.domain.model.ServiceTicket;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.GarageService;
+import com.project.BookingCar.util.CheckNumberOfImageUtils;
+import com.project.BookingCar.util.DescriptionCheckerUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +41,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     private final UserRepository userRepository;
 
     private final GarageRepositoryCustom garageRepositoryCustom;
+
+    private final ServiceMediaBookingRepository mediaBookingRepository;
 
     private final CommonMapper mapper;
     private final RequestTicketRepository requestTicketRepository;
@@ -98,7 +106,7 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     @Override
     public void handleIncomingRequest(Long requestTicket, SuperStatus status) {
         // Garage accepted appointment of car
-        RequestTicket rt = requestTicketRepository.findById(requestTicket).orElseThrow(() -> new IllegalArgumentException("Request ticket not exits"));
+        RequestTicket rt = getRequestTicket(requestTicket);
         if (SuperStatus.ACCEPTED.equals(status)) {
             rt.setStatus(RequestTicketsStatus.GARAGE_CONFIRMED);
         } else {
@@ -110,13 +118,14 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     @Override
     public void confirmCheckIn(Long requestTicketId) {
         // Garage confirm driver check in
-        RequestTicket rt = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exits"));
+        RequestTicket rt = getRequestTicket(requestTicketId);
         log.info("Request ticket status : {}",rt.getStatus());
-        if (RequestTicketsStatus.COMPLETED.equals(rt.getStatus())){
+        if (!RequestTicketsStatus.COMPLETED.equals(rt.getStatus())){
         rt.setStatus(RequestTicketsStatus.COMPLETED);
         ServiceTicket serviceTicket = ServiceTicket
                 .builder()
                 .requestTicket(rt)
+                .status(ServiceTicketsStatus.CHECKING)
                 .build();
         serviceTicket.setCreateUser(getUsername());
         serviceTicketRepository.save(serviceTicket);
@@ -124,5 +133,34 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         } else {
             throw new IllegalArgumentException("Driver have confirmed at garage ^^");
         }
+    }
+
+    @Override
+    public void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description) {
+        CheckNumberOfImageUtils.check(resultImages);
+        DescriptionCheckerUtils.isDescriptionUnder500Words(description);
+        // Garage inspection result for driver
+        ServiceTicket st = serviceTicketRepository.findByRequestTicket(getRequestTicket(requestTicketId)).orElseThrow(() -> new IllegalArgumentException("Service ticket not exist!!!"));
+        st.setDescription(description);
+        st.setStatus(ServiceTicketsStatus.CHECKED);
+        st.setCheckedDate(LocalDateTime.now());
+        st.setCheckedUser(getUsername());
+
+
+
+        for (MultipartFile multipartFile : resultImages ) {
+            ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
+            serviceBookingMedia.setImageType(ServiceMediaImageType.RESULT);
+            log.info("Filename: {}", multipartFile.getOriginalFilename());
+            serviceBookingMedia.setImageUrl(multipartFile.getOriginalFilename());
+            serviceBookingMedia.setServiceTicket(st);
+            mediaBookingRepository.save(serviceBookingMedia);
+        }
+
+        serviceTicketRepository.save(st);
+    }
+
+    private RequestTicket getRequestTicket(Long requestTicketId){
+        return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
     }
 }

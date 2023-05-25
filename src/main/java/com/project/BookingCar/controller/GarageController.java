@@ -15,8 +15,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/garage")
@@ -129,7 +132,7 @@ public class GarageController extends BaseController {
     }
 
     @PostMapping("/{requestTicketId}/confirm-checked-in")
-    @PreAuthorize("hasAuthority('GARAGE')")
+//    @PreAuthorize("hasAuthority('GARAGE')")
     @Operation(summary = "Garage confirm driver check in")
     @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage confirm driver check in successfully",
             content = {@Content(mediaType = "application/json",
@@ -144,4 +147,20 @@ public class GarageController extends BaseController {
         garageService.confirmCheckIn(requestTicketId);
         return createSuccessResponse("Garage confirm driver check in", HttpStatus.OK);
     }
+
+   @PostMapping("/{requestTicketId}/car-inspection-report")
+   @Operation(summary = "Car inspection result in garage")
+   @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Car inspection result in garage successfully",
+           content = {@Content(mediaType = "application/json",
+                   schema = @Schema(implementation = ExtendedMessage.class))})
+   @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+           content = {@Content(mediaType = "application/json",
+                   schema = @Schema(implementation = ExtendedMessage.class))})
+   @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+           content = {@Content(mediaType = "application/json",
+                   schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> inspectionResult(@PathVariable Long requestTicketId, @RequestPart String description, @RequestPart List<MultipartFile> resultImages){
+        garageService.inspectionResult(requestTicketId, resultImages, description);
+        return createSuccessResponse("Car inspection result in garage successfully", HttpStatus.OK);
+   }
 }

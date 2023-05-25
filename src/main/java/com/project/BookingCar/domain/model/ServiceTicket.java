@@ -67,7 +67,8 @@ public class ServiceTicket extends BaseEntity{
     private Boolean isPayment;
     @Column(name = "total_price")
     private Double totalPrice;
-
+    @Column(name = "description")
+    private String description;
     @OneToMany(mappedBy = "serviceTicket")
     private List<ServiceBookingMedia> serviceTicketServiceBookingMedias;
 
