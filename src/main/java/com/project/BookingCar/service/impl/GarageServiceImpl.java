@@ -111,6 +111,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     public void confirmCheckIn(Long requestTicketId) {
         // Garage confirm driver check in
         RequestTicket rt = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exits"));
+        log.info("Request ticket status : {}",rt.getStatus());
+        if (RequestTicketsStatus.COMPLETED.equals(rt.getStatus())){
         rt.setStatus(RequestTicketsStatus.COMPLETED);
         ServiceTicket serviceTicket = ServiceTicket
                 .builder()
@@ -119,5 +121,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         serviceTicket.setCreateUser(getUsername());
         serviceTicketRepository.save(serviceTicket);
         requestTicketRepository.save(rt);
+        } else {
+            throw new IllegalArgumentException("Driver have confirmed at garage ^^");
+        }
     }
 }

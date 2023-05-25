@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -128,6 +129,7 @@ public class GarageController extends BaseController {
     }
 
     @PostMapping("/{requestTicketId}/confirm-checked-in")
+    @PreAuthorize("hasAuthority('GARAGE')")
     @Operation(summary = "Garage confirm driver check in")
     @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage confirm driver check in successfully",
             content = {@Content(mediaType = "application/json",
