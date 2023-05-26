@@ -14,6 +14,7 @@ import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
+import com.project.BookingCar.service.FileStorageService;
 import com.project.BookingCar.service.GarageService;
 import com.project.BookingCar.util.CheckNumberOfImageUtils;
 import com.project.BookingCar.util.DescriptionCheckerUtils;
@@ -46,6 +47,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
 
     private final CommonMapper mapper;
     private final RequestTicketRepository requestTicketRepository;
+
+    private final FileStorageService fileStorageService;
 
 
     @Override
@@ -141,23 +144,27 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         DescriptionCheckerUtils.isDescriptionUnder500Words(description);
         // Garage inspection result for driver
         ServiceTicket st = serviceTicketRepository.findByRequestTicket(getRequestTicket(requestTicketId)).orElseThrow(() -> new IllegalArgumentException("Service ticket not exist!!!"));
-        st.setDescription(description);
-        st.setStatus(ServiceTicketsStatus.CHECKED);
-        st.setCheckedDate(LocalDateTime.now());
-        st.setCheckedUser(getUsername());
+        if (!ServiceTicketsStatus.CHECKED.equals(st.getStatus())) {
+            st.setDescription(description);
+            st.setStatus(ServiceTicketsStatus.CHECKED);
+            st.setCheckedDate(LocalDateTime.now());
+            st.setCheckedUser(getUsername());
 
 
+            for (MultipartFile multipartFile : resultImages) {
+                ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
+                String fileName = fileStorageService.storeFile(multipartFile);
+                serviceBookingMedia.setImageType(ServiceMediaImageType.RESULT);
+                log.info("Filename: {}", multipartFile.getOriginalFilename());
+                serviceBookingMedia.setImageUrl(fileName);
+                serviceBookingMedia.setServiceTicket(st);
+                mediaBookingRepository.save(serviceBookingMedia);
+            }
 
-        for (MultipartFile multipartFile : resultImages ) {
-            ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
-            serviceBookingMedia.setImageType(ServiceMediaImageType.RESULT);
-            log.info("Filename: {}", multipartFile.getOriginalFilename());
-            serviceBookingMedia.setImageUrl(multipartFile.getOriginalFilename());
-            serviceBookingMedia.setServiceTicket(st);
-            mediaBookingRepository.save(serviceBookingMedia);
+            serviceTicketRepository.save(st);
+        } else {
+            throw new IllegalArgumentException("Car has inspection result !!!!!");
         }
-
-        serviceTicketRepository.save(st);
     }
 
     private RequestTicket getRequestTicket(Long requestTicketId){
