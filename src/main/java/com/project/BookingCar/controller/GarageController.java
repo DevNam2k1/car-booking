@@ -4,6 +4,7 @@ import com.project.BookingCar.config.Constant;
 import com.project.BookingCar.controller.base.BaseController;
 import com.project.BookingCar.domain.dto.GarageDTO;
 import com.project.BookingCar.domain.dto.message.ExtendedMessage;
+import com.project.BookingCar.domain.enums.CRUDEnums;
 import com.project.BookingCar.domain.enums.SuperStatus;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.service.GarageService;
@@ -159,8 +160,8 @@ public class GarageController extends BaseController {
    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
            content = {@Content(mediaType = "application/json",
                    schema = @Schema(implementation = ExtendedMessage.class))})
-    public ResponseEntity<?> inspectionResult(@PathVariable Long requestTicketId, @RequestPart String description, @RequestPart List<MultipartFile> resultImages){
-        garageService.inspectionResult(requestTicketId, resultImages, description);
+    public ResponseEntity<?> inspectionResult(@PathVariable Long requestTicketId, @RequestPart String description, @RequestPart List<MultipartFile> resultImages, @RequestParam  CRUDEnums features){
+        garageService.inspectionResult(requestTicketId, resultImages, description, features);
         return createSuccessResponse("Car inspection result in garage successfully", HttpStatus.OK);
    }
 }

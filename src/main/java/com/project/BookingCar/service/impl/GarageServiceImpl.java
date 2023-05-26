@@ -2,10 +2,7 @@ package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.GarageDTO;
 import com.project.BookingCar.domain.dto.page.GaragePageDTO;
-import com.project.BookingCar.domain.enums.RequestTicketsStatus;
-import com.project.BookingCar.domain.enums.ServiceMediaImageType;
-import com.project.BookingCar.domain.enums.ServiceTicketsStatus;
-import com.project.BookingCar.domain.enums.SuperStatus;
+import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.Garage;
 import com.project.BookingCar.domain.model.RequestTicket;
 import com.project.BookingCar.domain.model.ServiceBookingMedia;
@@ -27,12 +24,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class GarageServiceImpl extends BaseService implements GarageService {
     private final ServiceTicketRepository serviceTicketRepository;
@@ -139,29 +138,16 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     }
 
     @Override
-    public void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description) {
+    public void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description, CRUDEnums feature) {
         CheckNumberOfImageUtils.check(resultImages);
         DescriptionCheckerUtils.isDescriptionUnder500Words(description);
         // Garage inspection result for driver
         ServiceTicket st = serviceTicketRepository.findByRequestTicket(getRequestTicket(requestTicketId)).orElseThrow(() -> new IllegalArgumentException("Service ticket not exist!!!"));
-        if (!ServiceTicketsStatus.CHECKED.equals(st.getStatus())) {
-            st.setDescription(description);
-            st.setStatus(ServiceTicketsStatus.CHECKED);
-            st.setCheckedDate(LocalDateTime.now());
-            st.setCheckedUser(getUsername());
-
-
-            for (MultipartFile multipartFile : resultImages) {
-                ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
-                String fileName = fileStorageService.storeFile(multipartFile);
-                serviceBookingMedia.setImageType(ServiceMediaImageType.RESULT);
-                log.info("Filename: {}", multipartFile.getOriginalFilename());
-                serviceBookingMedia.setImageUrl(fileName);
-                serviceBookingMedia.setServiceTicket(st);
-                mediaBookingRepository.save(serviceBookingMedia);
-            }
-
-            serviceTicketRepository.save(st);
+        if (ServiceTicketsStatus.CHECKED.equals(st.getStatus()) && CRUDEnums.UPDATE.equals(feature)) {
+            mediaBookingRepository.deleteAllByServiceTicket(st);
+            saveServiceTicketAndMediaBooking(st,resultImages,description);
+        } else if(ServiceTicketsStatus.CHECKING.equals(st.getStatus()) && CRUDEnums.CREATE.equals(feature)) {
+            saveServiceTicketAndMediaBooking(st,resultImages,description);
         } else {
             throw new IllegalArgumentException("Car has inspection result !!!!!");
         }
@@ -169,5 +155,26 @@ public class GarageServiceImpl extends BaseService implements GarageService {
 
     private RequestTicket getRequestTicket(Long requestTicketId){
         return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
+    }
+
+    private void saveServiceTicketAndMediaBooking(ServiceTicket st ,List<MultipartFile> resultImages, String description){
+
+        st.setDescription(description);
+        st.setStatus(ServiceTicketsStatus.CHECKED);
+        st.setCheckedDate(LocalDateTime.now());
+        st.setCheckedUser(getUsername());
+
+
+        for (MultipartFile multipartFile : resultImages) {
+            ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
+            String fileName = fileStorageService.storeFile(multipartFile);
+            serviceBookingMedia.setImageType(ServiceMediaImageType.RESULT);
+            log.info("Filename: {}", multipartFile.getOriginalFilename());
+            serviceBookingMedia.setImageUrl(fileName);
+            serviceBookingMedia.setServiceTicket(st);
+            mediaBookingRepository.save(serviceBookingMedia);
+        }
+
+        serviceTicketRepository.save(st);
     }
 }
