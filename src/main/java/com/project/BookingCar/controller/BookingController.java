@@ -90,4 +90,20 @@ public class BookingController extends BaseController {
         return createSuccessResponse("Count request ticket by waiting customer approve price", bookingService.countRequestTicketOfWaitingCustomerApprove());
     }
 
+    @GetMapping("/{requestTicketId}/info")
+    @Operation(summary = "Information detail of appointment")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Information detail of appointment successful",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> requestTicketDetailInformation(@PathVariable Long requestTicketId){
+        return createSuccessResponse("Information of request ticket", bookingService.getRequestTicketInformation(requestTicketId));
+    }
+
 }

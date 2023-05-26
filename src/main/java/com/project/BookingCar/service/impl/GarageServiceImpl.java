@@ -111,6 +111,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         RequestTicket rt = getRequestTicket(requestTicket);
         if (SuperStatus.ACCEPTED.equals(status)) {
             rt.setStatus(RequestTicketsStatus.GARAGE_CONFIRMED);
+            rt.setGarageConfirmedUser(getUsername());
+            rt.setGarageConfirmedDate(LocalDateTime.now());
         } else {
             log.info("Request ticket have cancel!!!");
         }
@@ -124,6 +126,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         log.info("Request ticket status : {}",rt.getStatus());
         if (!RequestTicketsStatus.COMPLETED.equals(rt.getStatus())){
         rt.setStatus(RequestTicketsStatus.COMPLETED);
+        rt.setGarageCompletedUser(getUsername());
+        rt.setGarageCompleteDate(LocalDateTime.now());
         ServiceTicket serviceTicket = ServiceTicket
                 .builder()
                 .requestTicket(rt)

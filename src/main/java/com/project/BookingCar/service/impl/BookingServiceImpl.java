@@ -5,6 +5,7 @@ import com.project.BookingCar.domain.dto.appointment.CarServicesDTO;
 import com.project.BookingCar.domain.dto.appointment.CarStatuesDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
+import com.project.BookingCar.domain.dto.page.RequestTicketDTO;
 import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.mapper.CommonMapper;
@@ -148,6 +149,11 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     @Override
     public Integer countRequestTicketOfWaitingCustomerApprove() {
         return serviceTicketRepository.countRequestTicketOfStatusWaitingCustomerApprove(getUserId(), ServiceTicketsStatus.WAITING_CUSTOMER_APPROVE_PRICE.getValue());
+    }
+
+    @Override
+    public RequestTicketDTO getRequestTicketInformation(Long requestTicketId) {
+        return commonMapper.convertToResponse(requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!")), RequestTicketDTO.class);
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
