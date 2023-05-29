@@ -2,6 +2,7 @@ package com.project.BookingCar.service;
 
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
+import com.project.BookingCar.domain.dto.page.InspectionResultDTO;
 import com.project.BookingCar.domain.dto.page.RequestTicketDTO;
 import com.project.BookingCar.domain.enums.AppointmentDriverStatus;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,6 @@ public interface BookingService {
     Integer countRequestTicketOfWaitingCustomerApprove();
 
     RequestTicketDTO getRequestTicketInformation(Long requestTicketId);
+
+    InspectionResultDTO getInspectionResultForCustomer(Long requestTicketId);
 }
