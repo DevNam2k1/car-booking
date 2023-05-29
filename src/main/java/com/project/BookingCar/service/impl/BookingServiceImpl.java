@@ -5,7 +5,9 @@ import com.project.BookingCar.domain.dto.appointment.CarServicesDTO;
 import com.project.BookingCar.domain.dto.appointment.CarStatuesDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
+import com.project.BookingCar.domain.dto.page.InspectionResultDTO;
 import com.project.BookingCar.domain.dto.page.RequestTicketDTO;
+import com.project.BookingCar.domain.dto.page.ServiceBookingMediaDTO;
 import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.mapper.CommonMapper;
@@ -154,6 +156,17 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     @Override
     public RequestTicketDTO getRequestTicketInformation(Long requestTicketId) {
         return commonMapper.convertToResponse(requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!")), RequestTicketDTO.class);
+    }
+
+    @Override
+    public InspectionResultDTO getInspectionResultForCustomer(Long requestTicketId) {
+        RequestTicket rt = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!"));
+        List<ServiceBookingMedia> serviceBookingMedia = rt.getServiceTickets().get(0).getServiceTicketServiceBookingMedias();
+        return InspectionResultDTO
+                .builder()
+                .bookingMedias(commonMapper.convertToResponseList(serviceBookingMedia, ServiceBookingMediaDTO.class))
+                .description(rt.getServiceTickets().get(0).getDescription())
+                .build();
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
