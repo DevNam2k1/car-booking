@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -69,6 +70,10 @@ public class ServiceTicket extends BaseEntity{
     private Double totalPrice;
     @Column(name = "description")
     private String description;
+    @Column(name = "expected_hand_over_date")
+    private LocalDateTime expectedHandOverDate;
+    @Column(name = "expected_hand_over_time")
+    private LocalTime expectedHandOverTime;
     @OneToMany(mappedBy = "serviceTicket")
     private List<ServiceBookingMedia> serviceTicketServiceBookingMedias;
 
