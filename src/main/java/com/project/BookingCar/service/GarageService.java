@@ -1,6 +1,7 @@
 package com.project.BookingCar.service;
 
 import com.project.BookingCar.domain.dto.GarageDTO;
+import com.project.BookingCar.domain.dto.request.PriceQuotationRequest;
 import com.project.BookingCar.domain.dto.page.GaragePageDTO;
 import com.project.BookingCar.domain.enums.CRUDEnums;
 import com.project.BookingCar.domain.enums.SuperStatus;
@@ -19,4 +20,5 @@ public interface GarageService {
     void handleIncomingRequest(Long requestTicket, SuperStatus status);
     void confirmCheckIn(Long requestTicketId);
     void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description, CRUDEnums features);
+    void providePriceQuotation(Long requestTicketId, PriceQuotationRequest priceQuotation, List<MultipartFile> importImages);
 }

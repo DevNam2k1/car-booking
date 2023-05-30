@@ -3,6 +3,7 @@ package com.project.BookingCar.controller;
 import com.project.BookingCar.config.Constant;
 import com.project.BookingCar.controller.base.BaseController;
 import com.project.BookingCar.domain.dto.GarageDTO;
+import com.project.BookingCar.domain.dto.request.PriceQuotationRequest;
 import com.project.BookingCar.domain.dto.message.ExtendedMessage;
 import com.project.BookingCar.domain.enums.CRUDEnums;
 import com.project.BookingCar.domain.enums.SuperStatus;
@@ -164,4 +165,20 @@ public class GarageController extends BaseController {
         garageService.inspectionResult(requestTicketId, resultImages, description, features);
         return createSuccessResponse("Car inspection result in garage successfully", HttpStatus.OK);
    }
+
+    @PostMapping("/{requestTicketId}/provide-price-quotation")
+    @Operation(summary = "Garage provide price quotation")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage provide price quotation successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> providePriceQuotation(@PathVariable Long requestTicketId, @RequestPart(name = "create_price_quotation_request") PriceQuotationRequest priceQuotation, @RequestPart(name = "receipt_images", required = false) List<MultipartFile> importImages){
+        garageService.providePriceQuotation(requestTicketId, priceQuotation, importImages);
+        return createSuccessResponse("Garage provide price quotation", HttpStatus.OK);
+    }
 }

@@ -1,12 +1,10 @@
 package com.project.BookingCar.service.impl;
 
 import com.project.BookingCar.domain.dto.GarageDTO;
+import com.project.BookingCar.domain.dto.request.PriceQuotationRequest;
 import com.project.BookingCar.domain.dto.page.GaragePageDTO;
 import com.project.BookingCar.domain.enums.*;
-import com.project.BookingCar.domain.model.Garage;
-import com.project.BookingCar.domain.model.RequestTicket;
-import com.project.BookingCar.domain.model.ServiceBookingMedia;
-import com.project.BookingCar.domain.model.ServiceTicket;
+import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.domain.param.GarageParam;
 import com.project.BookingCar.mapper.CommonMapper;
 import com.project.BookingCar.repository.*;
@@ -28,6 +26,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -43,6 +42,8 @@ public class GarageServiceImpl extends BaseService implements GarageService {
     private final GarageRepositoryCustom garageRepositoryCustom;
 
     private final ServiceMediaBookingRepository mediaBookingRepository;
+
+    private final ServiceServiceRepository serviceServiceRepository;
 
     private final CommonMapper mapper;
     private final RequestTicketRepository requestTicketRepository;
@@ -146,7 +147,7 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         CheckNumberOfImageUtils.check(resultImages);
         DescriptionCheckerUtils.isDescriptionUnder500Words(description);
         // Garage inspection result for driver
-        ServiceTicket st = serviceTicketRepository.findByRequestTicket(getRequestTicket(requestTicketId)).orElseThrow(() -> new IllegalArgumentException("Service ticket not exist!!!"));
+        ServiceTicket st = getServiceTicket(getRequestTicket(requestTicketId));
         if (ServiceTicketsStatus.CHECKED.equals(st.getStatus()) && CRUDEnums.UPDATE.equals(feature)) {
             mediaBookingRepository.deleteAllByServiceTicket(st);
             saveServiceTicketAndMediaBooking(st,resultImages,description);
@@ -157,8 +158,17 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         }
     }
 
+    @Override
+    public void providePriceQuotation(Long requestTicketId, PriceQuotationRequest priceQuotation, List<MultipartFile> importImages) {
+        saveServiceTicketStatusAndMediaBookingForPriceQuotation(getServiceTicket(getRequestTicket(requestTicketId)),priceQuotation,importImages);
+    }
+
     private RequestTicket getRequestTicket(Long requestTicketId){
         return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
+    }
+
+    private ServiceTicket getServiceTicket(RequestTicket requestTicket){
+        return serviceTicketRepository.findByRequestTicket(requestTicket).orElseThrow(() -> new IllegalArgumentException("Service ticket not exist!!!"));
     }
 
     private void saveServiceTicketAndMediaBooking(ServiceTicket st ,List<MultipartFile> resultImages, String description){
@@ -168,7 +178,6 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         st.setCheckedDate(LocalDateTime.now());
         st.setCheckedUser(getUsername());
 
-
         for (MultipartFile multipartFile : resultImages) {
             ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
             String fileName = fileStorageService.storeFile(multipartFile);
@@ -177,6 +186,44 @@ public class GarageServiceImpl extends BaseService implements GarageService {
             serviceBookingMedia.setImageUrl(fileName);
             serviceBookingMedia.setServiceTicket(st);
             mediaBookingRepository.save(serviceBookingMedia);
+        }
+
+        serviceTicketRepository.save(st);
+    }
+
+    private void saveServiceTicketStatusAndMediaBookingForPriceQuotation(ServiceTicket st ,PriceQuotationRequest priceQuotation ,List<MultipartFile> resultImages){
+        st.setStatus(ServiceTicketsStatus.WAITING_CUSTOMER_APPROVE_PRICE);
+        st.setUpdateWaitingCustomerApproveDate(LocalDateTime.now());
+        st.setUpdateWaitingCustomerApproveUser(getUsername());
+        st.setExpectedHandOverDate(priceQuotation.getExpectedHandOverDate());
+        st.setExpectedHandOverTime(priceQuotation.getExpectedHandOverTime());
+        st.setTotalPrice(priceQuotation.getTotalPrice());
+
+        if (Objects.nonNull(resultImages)) {
+            CheckNumberOfImageUtils.check(resultImages);
+            for (MultipartFile file : resultImages) {
+                ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
+                String fileName = fileStorageService.storeFile(file);
+                serviceBookingMedia.setImageType(ServiceMediaImageType.RECEIPT);
+                log.info("Filename: {}", file.getOriginalFilename());
+                serviceBookingMedia.setImageUrl(fileName);
+                serviceBookingMedia.setServiceTicket(st);
+                mediaBookingRepository.save(serviceBookingMedia);
+            }
+        }
+
+        for (ServiceServices services : mapper.convertToEntityList(priceQuotation.getServices(), ServiceServices.class)){
+            ServiceServices serviceServices = ServiceServices
+                    .builder()
+                    .price(services.getPrice())
+                    .parentService(services.getParentService())
+                    .parentId(services.getParentId())
+                    .refId(services.getRefId())
+                    .type(services.getType())
+                    .name(services.getName())
+                    .serviceTicket(st)
+                    .build();
+            serviceServiceRepository.save(serviceServices);
         }
 
         serviceTicketRepository.save(st);
