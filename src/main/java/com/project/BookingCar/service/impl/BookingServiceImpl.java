@@ -1,13 +1,11 @@
 package com.project.BookingCar.service.impl;
 
 import com.google.gson.Gson;
+import com.project.BookingCar.domain.dto.PriceQuotationDTO;
 import com.project.BookingCar.domain.dto.appointment.CarServicesDTO;
 import com.project.BookingCar.domain.dto.appointment.CarStatuesDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
-import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
-import com.project.BookingCar.domain.dto.page.InspectionResultDTO;
-import com.project.BookingCar.domain.dto.page.RequestTicketDTO;
-import com.project.BookingCar.domain.dto.page.ServiceBookingMediaDTO;
+import com.project.BookingCar.domain.dto.page.*;
 import com.project.BookingCar.domain.enums.*;
 import com.project.BookingCar.domain.model.*;
 import com.project.BookingCar.mapper.CommonMapper;
@@ -167,6 +165,24 @@ public class BookingServiceImpl extends BaseService implements BookingService {
                 .bookingMedias(commonMapper.convertToResponseList(serviceBookingMedia, ServiceBookingMediaDTO.class))
                 .description(rt.getServiceTickets().get(0).getDescription())
                 .build();
+    }
+
+    @Override
+    public PriceQuotationDTO getDriverReceivePriceQuotation(Long requestTicketId) {
+        RequestTicket requestTicket = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!"));
+        PriceQuotationDTO priceQuotationDTO = commonMapper.convertToResponse(requestTicket, PriceQuotationDTO.class);
+        List<ServiceBookingMedia> serviceBookingMedias = new ArrayList<>();
+        for (ServiceBookingMedia serviceBookingMedia : requestTicket.getServiceTickets().get(0).getServiceTicketServiceBookingMedias()){
+            if (ServiceMediaImageType.RECEIPT.equals(serviceBookingMedia.getImageType())){
+                serviceBookingMedias.add(serviceBookingMedia);
+            }
+        }
+        priceQuotationDTO.setServices(commonMapper.convertToResponseList(requestTicket.getServiceTickets().get(0).getServiceTicketServiceServices(), ServiceServicesDTO.class));
+        priceQuotationDTO.setBookingMediaDTOS(commonMapper.convertToResponseList(serviceBookingMedias, ServiceBookingMediaDTO.class));
+        priceQuotationDTO.setTotalPrice(requestTicket.getServiceTickets().get(0).getTotalPrice());
+        priceQuotationDTO.setExpectedHandOverTime(requestTicket.getServiceTickets().get(0).getExpectedHandOverTime());
+        priceQuotationDTO.setExpectedHandOverDate(requestTicket.getServiceTickets().get(0).getExpectedHandOverDate());
+        return priceQuotationDTO;
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
