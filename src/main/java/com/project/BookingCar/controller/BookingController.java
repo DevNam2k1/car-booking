@@ -122,4 +122,19 @@ public class BookingController extends BaseController {
         return createSuccessResponse("Get inspection result for customer", bookingService.getInspectionResultForCustomer(requestTicketId));
     }
 
+    @GetMapping("/{requestTicketId}/price-quotation")
+    @Operation(summary = "Get price quotation for driver")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Get price quotation for driver successful",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> driverReceivePriceQuotation(@PathVariable Long requestTicketId){
+        return createSuccessResponse("Get price quotation for driver", bookingService.getDriverReceivePriceQuotation(requestTicketId));
+    }
 }

@@ -1,5 +1,6 @@
 package com.project.BookingCar.service;
 
+import com.project.BookingCar.domain.dto.PriceQuotationDTO;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
 import com.project.BookingCar.domain.dto.page.InspectionResultDTO;
@@ -19,4 +20,6 @@ public interface BookingService {
     RequestTicketDTO getRequestTicketInformation(Long requestTicketId);
 
     InspectionResultDTO getInspectionResultForCustomer(Long requestTicketId);
+
+    PriceQuotationDTO getDriverReceivePriceQuotation(Long requestTicketId);
 }
