@@ -21,4 +21,5 @@ public interface GarageService {
     void confirmCheckIn(Long requestTicketId);
     void inspectionResult(Long requestTicketId, List<MultipartFile> resultImages, String description, CRUDEnums features);
     void providePriceQuotation(Long requestTicketId, PriceQuotationRequest priceQuotation, List<MultipartFile> importImages);
+    void garageFixedCar(Long requestTicketId);
 }

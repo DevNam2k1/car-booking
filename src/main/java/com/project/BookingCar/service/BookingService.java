@@ -22,4 +22,6 @@ public interface BookingService {
     InspectionResultDTO getInspectionResultForCustomer(Long requestTicketId);
 
     PriceQuotationDTO getDriverReceivePriceQuotation(Long requestTicketId);
+
+    void approvePriceQuotation(Long requestTicketId);
 }
