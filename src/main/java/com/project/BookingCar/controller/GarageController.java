@@ -181,4 +181,20 @@ public class GarageController extends BaseController {
         garageService.providePriceQuotation(requestTicketId, priceQuotation, importImages);
         return createSuccessResponse("Garage provide price quotation", HttpStatus.OK);
     }
+
+    @PostMapping("/{requestTicketId}/fixed")
+    @Operation(summary = "Fixed car of driver")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Fixed car of driver successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    public ResponseEntity<?> garageFixed(@PathVariable Long requestTicketId){
+        garageService.garageFixedCar(requestTicketId);
+        return createSuccessResponse("Fixed car of driver", HttpStatus.OK);
+    }
 }

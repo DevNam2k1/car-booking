@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -183,6 +184,19 @@ public class BookingServiceImpl extends BaseService implements BookingService {
         priceQuotationDTO.setExpectedHandOverTime(requestTicket.getServiceTickets().get(0).getExpectedHandOverTime());
         priceQuotationDTO.setExpectedHandOverDate(requestTicket.getServiceTickets().get(0).getExpectedHandOverDate());
         return priceQuotationDTO;
+    }
+
+    @Override
+    public void approvePriceQuotation(Long requestTicketId) {
+        RequestTicket requestTicket = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!"));
+        requestTicket.setPriceCheckedDate(LocalDateTime.now());
+        requestTicket.setPriceCheckedUser(getUsername());
+        requestTicketRepository.save(requestTicket);
+        ServiceTicket serviceTicket = serviceTicketRepository.findByRequestTicket(requestTicket).orElseThrow(() -> new IllegalArgumentException("Service ticket is not exist !!!!"));
+        serviceTicket.setStatus(ServiceTicketsStatus.CUSTOMER_APPROVED_PRICE);
+        serviceTicket.setCustomerApprovedPriceDate(LocalDateTime.now());
+        serviceTicket.setCustomerApprovedPriceUser(getUsername());
+        serviceTicketRepository.save(serviceTicket);
     }
 
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {

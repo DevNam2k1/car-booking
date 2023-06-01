@@ -163,6 +163,19 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         saveServiceTicketStatusAndMediaBookingForPriceQuotation(getServiceTicket(getRequestTicket(requestTicketId)),priceQuotation,importImages);
     }
 
+    @Override
+    public void garageFixedCar(Long requestTicketId) {
+        ServiceTicket serviceTicket = getServiceTicket(getRequestTicket(requestTicketId));
+        if (ServiceTicketsStatus.CUSTOMER_APPROVED_PRICE.equals(serviceTicket.getStatus())) {
+            serviceTicket.setStatus(ServiceTicketsStatus.FIXED);
+            serviceTicket.setFixedDate(LocalDateTime.now());
+            serviceTicket.setFixedUser(getUsername());
+            serviceTicketRepository.save(serviceTicket);
+        } else {
+            throw new IllegalArgumentException("Driver not accept price quotation!!!");
+        }
+    }
+
     private RequestTicket getRequestTicket(Long requestTicketId){
         return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
     }
