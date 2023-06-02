@@ -203,8 +203,6 @@ public class BookingServiceImpl extends BaseService implements BookingService {
     public void driverConfirmPayment(Long requestTicketId, PaymentType paymentType) {
         RequestTicket requestTicket = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!"));
         ServiceTicket serviceTicket = serviceTicketRepository.findByRequestTicket(requestTicket).orElseThrow(() -> new IllegalArgumentException("Service ticket is not exist !!!!"));
-        serviceTicket.setPaymentConfirmationDate(LocalDateTime.now());
-        serviceTicket.setPaymentConfirmationUser(getUsername());
         serviceTicket.setPaymentType(paymentType.getValue());
         serviceTicket.setIsPayment(false);
         serviceTicketRepository.save(serviceTicket);
