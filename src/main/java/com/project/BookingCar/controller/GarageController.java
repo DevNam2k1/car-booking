@@ -197,4 +197,21 @@ public class GarageController extends BaseController {
         garageService.garageFixedCar(requestTicketId);
         return createSuccessResponse("Fixed car of driver", HttpStatus.OK);
     }
+
+    @PostMapping("/{requestTicketId}/payment-confirmed")
+    @Operation(summary = "Garage payment confirmed")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Garage payment confirmed successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> paymentConfirmed(@PathVariable Long requestTicketId){
+        garageService.garagePaymentConfirmed(requestTicketId);
+        return createSuccessResponse("Garage payment confirmed", HttpStatus.OK);
+    }
 }

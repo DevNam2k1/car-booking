@@ -176,6 +176,16 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         }
     }
 
+    @Override
+    public void garagePaymentConfirmed(Long requestTicketId) {
+        ServiceTicket serviceTicket = getServiceTicket(getRequestTicket(requestTicketId));
+        serviceTicket.setIsPayment(true);
+        serviceTicket.setStatus(ServiceTicketsStatus.PAYMENT_CONFIRMATION);
+        serviceTicket.setPaymentConfirmationDate(LocalDateTime.now());
+        serviceTicket.setPaymentConfirmationUser(getUsername());
+        serviceTicketRepository.save(serviceTicket);
+    }
+
     private RequestTicket getRequestTicket(Long requestTicketId){
         return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
     }
