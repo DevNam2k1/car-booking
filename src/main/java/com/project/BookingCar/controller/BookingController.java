@@ -5,6 +5,7 @@ import com.project.BookingCar.controller.base.BaseController;
 import com.project.BookingCar.domain.dto.appointment.CreateAppointmentDTO;
 import com.project.BookingCar.domain.dto.message.ExtendedMessage;
 import com.project.BookingCar.domain.enums.AppointmentDriverStatus;
+import com.project.BookingCar.domain.enums.PaymentType;
 import com.project.BookingCar.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -154,4 +155,22 @@ public class BookingController extends BaseController {
         bookingService.approvePriceQuotation(requestTicketId);
         return createSuccessResponse("Driver approve price quotation", HttpStatus.OK);
     }
+
+    @PostMapping("/{requestTicketId}/driver-confirm-payment")
+    @Operation(summary = "Driver chose method payment")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Driver chose method payment",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> driverConfirmPayment(@PathVariable Long requestTicketId, @RequestParam PaymentType paymentType){
+        bookingService.driverConfirmPayment(requestTicketId, paymentType);
+        return createSuccessResponse("Driver chose method payment!!!", HttpStatus.OK);
+    }
+
 }

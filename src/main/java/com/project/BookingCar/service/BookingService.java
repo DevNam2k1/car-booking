@@ -6,6 +6,7 @@ import com.project.BookingCar.domain.dto.page.AppointmentDriverPageDTO;
 import com.project.BookingCar.domain.dto.page.InspectionResultDTO;
 import com.project.BookingCar.domain.dto.page.RequestTicketDTO;
 import com.project.BookingCar.domain.enums.AppointmentDriverStatus;
+import com.project.BookingCar.domain.enums.PaymentType;
 import org.springframework.data.domain.Page;
 
 public interface BookingService {
@@ -24,4 +25,6 @@ public interface BookingService {
     PriceQuotationDTO getDriverReceivePriceQuotation(Long requestTicketId);
 
     void approvePriceQuotation(Long requestTicketId);
+
+    void driverConfirmPayment(Long requestTicketId, PaymentType paymentType);
 }
