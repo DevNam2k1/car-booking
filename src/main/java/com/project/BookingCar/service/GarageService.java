@@ -23,4 +23,5 @@ public interface GarageService {
     void providePriceQuotation(Long requestTicketId, PriceQuotationRequest priceQuotation, List<MultipartFile> importImages);
     void garageFixedCar(Long requestTicketId);
     void garagePaymentConfirmed(Long requestTicketId);
+    void handedOverCar(Long requestTicketId, List<MultipartFile> images);
 }

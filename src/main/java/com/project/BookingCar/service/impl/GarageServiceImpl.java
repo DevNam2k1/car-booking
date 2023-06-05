@@ -186,6 +186,27 @@ public class GarageServiceImpl extends BaseService implements GarageService {
         serviceTicketRepository.save(serviceTicket);
     }
 
+    @Override
+    public void handedOverCar(Long requestTicketId, List<MultipartFile> images) {
+        CheckNumberOfImageUtils.check(images);
+
+        ServiceTicket serviceTicket = getServiceTicket(getRequestTicket(requestTicketId));
+        serviceTicket.setStatus(ServiceTicketsStatus.GARAGE_HANDED_OVER_CAR);
+        serviceTicket.setGarageHandOverCarDate(LocalDateTime.now());
+        serviceTicket.setGarageHandOverCarUser(getUsername());
+        serviceTicketRepository.save(serviceTicket);
+
+        for (MultipartFile multipartFile : images) {
+            ServiceBookingMedia serviceBookingMedia = new ServiceBookingMedia();
+            String fileName = fileStorageService.storeFile(multipartFile);
+            serviceBookingMedia.setImageType(ServiceMediaImageType.FINISHED);
+            log.info("Filename: {}", multipartFile.getOriginalFilename());
+            serviceBookingMedia.setImageUrl(fileName);
+            serviceBookingMedia.setServiceTicket(serviceTicket);
+            mediaBookingRepository.save(serviceBookingMedia);
+        }
+    }
+
     private RequestTicket getRequestTicket(Long requestTicketId){
         return requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket not exist!!"));
     }
