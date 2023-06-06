@@ -174,7 +174,34 @@ public class BookingController extends BaseController {
     }
 
     @GetMapping("/{requestTicketId}/handed-over-car")
+    @Operation(summary = "Handed over car of driver")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Handed over car of driver successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
     public ResponseEntity<?> handedOverCar(@PathVariable Long requestTicketId){
         return createSuccessResponse("Handed over car of driver", bookingService.getHandedOverCar(requestTicketId));
+    }
+
+    @PostMapping("/{requestTicketId}/driver-received-car")
+    @Operation(summary = "Driver received car")
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_OK_STR, description = "Driver received car successfully",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_BAD_REQUEST_STR, description = "Input invalid",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+    @ApiResponse(responseCode = Constant.API_RESPONSE.API_STATUS_INTERNAL_SERVER_ERROR_STR, description = "Internal Server Error",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExtendedMessage.class))})
+
+    public ResponseEntity<?> driverReceivedCar(@PathVariable Long requestTicketId){
+        bookingService.driverReceivedCar(requestTicketId);
+        return createSuccessResponse("Driver received car ", HttpStatus.OK);
     }
 }

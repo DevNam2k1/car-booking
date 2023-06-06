@@ -31,4 +31,5 @@ public interface BookingService {
 
     void driverConfirmPayment(Long requestTicketId, PaymentType paymentType);
     List<ServiceBookingMediaDTO> getHandedOverCar(Long requestTicketId);
+    void driverReceivedCar(Long requestTicketId);
 }
