@@ -208,6 +208,19 @@ public class BookingServiceImpl extends BaseService implements BookingService {
         serviceTicketRepository.save(serviceTicket);
     }
 
+    @Override
+    public List<ServiceBookingMediaDTO> getHandedOverCar(Long requestTicketId) {
+        RequestTicket requestTicket = requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!"));
+        List<ServiceBookingMediaDTO> serviceBookingMediaDTOS = new ArrayList<>();
+        for(ServiceBookingMedia sbm : requestTicket.getServiceTickets().get(0).getServiceTicketServiceBookingMedias()) {
+            if (ServiceMediaImageType.FINISHED.equals(sbm.getImageType())){
+                ServiceBookingMediaDTO serviceBookingMediaDTO = new ServiceBookingMediaDTO(sbm.getId(), sbm.getImageUrl(), sbm.getImageType());
+                serviceBookingMediaDTOS.add(serviceBookingMediaDTO);
+            }
+        }
+        return serviceBookingMediaDTOS;
+    }
+
     private void saveRequestServices(RequestTicket requestTicket,List<CarServicesDTO> services) {
         for (CarServicesDTO car:services) {
             RequestServices requestServices = new RequestServices();

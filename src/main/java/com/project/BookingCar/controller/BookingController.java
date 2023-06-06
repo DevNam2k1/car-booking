@@ -173,4 +173,8 @@ public class BookingController extends BaseController {
         return createSuccessResponse("Driver chose method payment!!!", HttpStatus.OK);
     }
 
+    @GetMapping("/{requestTicketId}/handed-over-car")
+    public ResponseEntity<?> handedOverCar(@PathVariable Long requestTicketId){
+        return createSuccessResponse("Handed over car of driver", bookingService.getHandedOverCar(requestTicketId));
+    }
 }
