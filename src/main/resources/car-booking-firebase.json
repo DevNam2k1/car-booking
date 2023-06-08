@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "car-booking-58bff",
+  "private_key_id": "d05bd1c2fc7f594fa906c62b25d2cb26af21786f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCZuwNHqI16+ZrD\nU8NEICdTP9Y6+Z+HOp9g8gqwgEUhdnGUyacpw8VynYWtWhOQvarClrc+El2BfO5B\nZ9Ms8Vi0khIb4mHhA3rwvzpeLo0hEWqGwTQ3F4Ks9YN9W3sqBAx0DmHdyAuU4Pmn\nK5Dh7Dl9pz1L3JaAcaVsPadur+0ezFHMRfTz7MmiBGmi6scxQMYWxvTryyGbGwfb\nfS9MM2zCzsKbJjCyRwEmoPHumLVdjVkFsqYVjmDrXJvaJkOhviuEAGyxvK/DXpeW\nynfDel/XSuhVllGZ5dfL7X/VqWPQooTl1ztKoRfxzSUkr76PJnK1rEKWwL32NfQb\n4HqlnjR1AgMBAAECggEAIYh1GTLvlZUPyK6jR995pIOmv9uGjFFhxZxWb5SzP67d\n7LYl9ArDrZIlwCAHZ4mvz11f4DbSVbYCJJs4qbOFhXHdaF6zugjvzsbvvO6Lk1yA\nr59CPAgxVXgCdBw52/rhGomumFmUCSgf3PK4WkeUbM/Ho54c6CyiCF/Uf2T5pL9X\nF9x8oy369o19VUSP5rBsRc9pSzXws+lABAY0xeK5czqvRJKCImg/domUYSDm889b\nPoJaMPTko+6ufUAowTsfd45LzNhYpEh0nIdA2Dn8rha/r6VBtt5xkB/FhaVekhmJ\nG8gUayIebMTGrA2fxH8Hga1Ur9R3K84SGdcLVZRrQQKBgQDTrYEWeFe3dUfknAHs\nyNMA0lBbKvMwnsLielxDs/D5hh1zDx3oWfNiYJ4LkAQ/6k1Zy4yI1LM8Lp5vXuiw\nOB/w1asO55Zwfyif9P8N1d62oZ9lb1UKP4dT2fjkXsW/cko3tjFIvPYTNUuRymnc\nqYI8pBRxwWpYpBjyBF6c5yeqFQKBgQC562Gf2z5JndMYKUkM68/g924MPDk+nAT7\n2vybZvyKkloSwS10kdblKeZf1XkoMUNvLgPBM7poC+8d81O+2Yje5pFnlShlc87N\ngR2Kec+Klghihi5YA48Cwe4PNBz82egIwUeNXvIzYQnvYi7SCZ8pQtC6na1x/FJt\nulSsQ0DY4QKBgQC0fJQ83I+uVcnfG0Zo5zNC2BC8K3sAUd5JzZst/xfRKpGhsZoG\nq+viTg90PG/jL5yUnAJQCUxqXDWrMHmnB7P0XbtlEgIsGcBB41w2J82mW1jV3H/e\nJRz2WjzmPAjQnFq79hU/uB75cc/ll3l8NOxfWGg2Nny+5+x9L0yc7FvdoQKBgQCI\nyDvSuCJjVtHvfLBZ6UPPZzp3lfcnsPGZucsPKf2ylWnfUnB2yrUndGQhLZUtlNDg\nAyKQCdaipeUOS+7ZAoJIO6nOY1aNDV6gotVxA51FgIw6sC14Y2XbyYGzfcu12zty\n9YAG6kuWsVX14G5B6QJIAPg/07G/oruiLuwMsI4NAQKBgFbtFrOhGM/UIpPcHcrM\nUQd1V00p0Z+nW/rUvOBloQV7i3m/O/Jdt4G9eycRN5JRX+ahyHi6pzkJC35BXCkN\nYAS42gbKroOtCIJmmZ79kkPlqjsCVZg0qp+Xh1Jsc6gHDHZYEl4uol05gqoo4yv6\ni7npHt+rDZ/zmF4qTPfNWhVh\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-arp3a@car-booking-58bff.iam.gserviceaccount.com",
+  "client_id": "115267275213639538946",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-arp3a%40car-booking-58bff.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
