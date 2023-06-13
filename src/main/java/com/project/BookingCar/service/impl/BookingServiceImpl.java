@@ -13,6 +13,7 @@ import com.project.BookingCar.repository.*;
 import com.project.BookingCar.service.BaseService;
 import com.project.BookingCar.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl extends BaseService implements BookingService {
     private final RequestTicketRepository requestTicketRepository;
     private final GarageRepository garageRepository;
@@ -154,6 +156,7 @@ public class BookingServiceImpl extends BaseService implements BookingService {
 
     @Override
     public RequestTicketDTO getRequestTicketInformation(Long requestTicketId) {
+        log.info("Request ticket ID: {}", requestTicketId);
         return commonMapper.convertToResponse(requestTicketRepository.findById(requestTicketId).orElseThrow(() -> new IllegalArgumentException("Request ticket is not exist !!!!")), RequestTicketDTO.class);
     }
 
